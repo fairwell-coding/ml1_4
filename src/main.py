@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from k_means import kmeans
 from em import em
 
+
 def load_data(filename):
     with open(filename) as f:
         content = f.readlines()
@@ -16,6 +17,7 @@ def load_data(filename):
     x = np.array([float(i) for i in x_str]) 
     y = np.array([float(i) for i in y_str])
     return x, y, data_labels
+
 
 def plot_original_data(x, y, data_labels):
     labels = ['Head', 'Ear_left', 'Ear_right', 'Noise']
@@ -104,7 +106,6 @@ def main():
     print('--- Task K-Means ---')
     # task_kmeans(X_mouse) # TODO: uncomment to call the function
 
-    
     # ----- Task EM
     print('--- Task EM ---')
     # task_em(X_mouse) # TODO: uncomment to call the function
