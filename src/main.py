@@ -4,6 +4,9 @@ from k_means import kmeans
 from em import em
 
 
+RANDOM_STATE = 25  #
+
+
 def load_data(filename):
     with open(filename) as f:
         content = f.readlines()
@@ -63,8 +66,13 @@ def plot_mickey_mouse(X, K, ind_samples_clusters, centroids):
 
 
 def plot_cost(cost):
-    # TODO: plot cost over iteration
-    pass
+    x = np.linspace(1, len(cost) / 2, len(cost))
+    plt.plot(x, cost, label='loss curve')
+    plt.title('Cost function over iterations')
+    plt.xlabel('iterations')
+    plt.ylabel('cost')
+    plt.legend()
+    plt.show()
 
 
 def task_kmeans(X):
@@ -72,8 +80,9 @@ def task_kmeans(X):
     :param X: data for clustering, shape: (N, D), N=500, D = 2
     :return:
     """
-    K = 1 # TODO: change
-    max_iter = 1 # TODO: change 
+
+    K = 5
+    max_iter = 50
     ind_samples_clusters, centroids, cost = kmeans(X, K, max_iter)
 
     plot_cost(cost)
@@ -85,8 +94,8 @@ def task_em(X):
     :param X: data for clustering, shape: (N, D), N=500, D = 2
     :return:
     """
-    K = 1 # TODO: change 
-    max_iter = 1 # TODO: change 
+    K = 1  # TODO: change
+    max_iter = 1  # TODO: change
     means, soft_clusters, log_likelihood = em(X, K, max_iter)
     
     plot_cost(log_likelihood)
@@ -94,6 +103,8 @@ def task_em(X):
 
 
 def main():
+    np.random.seed(RANDOM_STATE)
+
     filename = 'mouse.txt'
     x, y, data_labels = load_data(filename)
     
@@ -104,7 +115,7 @@ def main():
 
     # ----- Task K-Means
     print('--- Task K-Means ---')
-    # task_kmeans(X_mouse) # TODO: uncomment to call the function
+    task_kmeans(X_mouse)
 
     # ----- Task EM
     print('--- Task EM ---')
