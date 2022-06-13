@@ -44,7 +44,7 @@ def plot_original_data(x, y, data_labels):
 
 def plot_mickey_mouse(X, K, ind_samples_clusters, centroids):
     x, y = X[:, 0], X[:, 1]
-    clusters = np.argmax(ind_samples_clusters, axis=1) # will work both for K-means and EM
+    clusters = np.argmax(ind_samples_clusters, axis=1)  # will work both for K-means and EM
     
     fig = plt.figure()
     fig.suptitle('Mickey mouse')
@@ -61,16 +61,17 @@ def plot_mickey_mouse(X, K, ind_samples_clusters, centroids):
         
     for i in range(K):
         ax.scatter(centroids[i, 0], centroids[i, 1], c='k', s=100)
+        # ax.scatter(centroids[i, 0], centroids[i, 1], c='k', s = (i + 1) * 40)
             
     plt.show()
 
 
-def plot_cost(cost):
-    x = np.linspace(1, len(cost) / 2, len(cost))
-    plt.plot(x, cost, label='loss curve')
-    plt.title('Cost function over iterations')
+def plot_cost(algorithm, cost, algorithm_name, title, legend, ylabel):
+    x = np.linspace(1, len(cost) / 2 if algorithm == 'kmeans' else len(cost), len(cost))
+    plt.plot(x, cost, label=f'{legend} curve')
+    plt.title(f'{algorithm_name}: {title} over iterations')
     plt.xlabel('iterations')
-    plt.ylabel('cost')
+    plt.ylabel(f'{ylabel}')
     plt.legend()
     plt.show()
 
@@ -85,7 +86,7 @@ def task_kmeans(X):
     max_iter = 50
     ind_samples_clusters, centroids, cost = kmeans(X, K, max_iter)
 
-    plot_cost(cost)
+    plot_cost('kmeans', cost, 'k-means', 'Cost function', 'loss', 'cost')
     plot_mickey_mouse(X, K, ind_samples_clusters, centroids)
 
 
@@ -94,11 +95,12 @@ def task_em(X):
     :param X: data for clustering, shape: (N, D), N=500, D = 2
     :return:
     """
-    K = 1  # TODO: change
-    max_iter = 1  # TODO: change
+
+    K = 5
+    max_iter = 100
     means, soft_clusters, log_likelihood = em(X, K, max_iter)
-    
-    plot_cost(log_likelihood)
+
+    plot_cost('em', log_likelihood, 'expectation-maximization', 'Log likelihood', 'log likelihood', 'log likelihood')
     plot_mickey_mouse(X, K, soft_clusters, means)
 
 
@@ -115,11 +117,11 @@ def main():
 
     # ----- Task K-Means
     print('--- Task K-Means ---')
-    task_kmeans(X_mouse)
+    # task_kmeans(X_mouse)
 
     # ----- Task EM
     print('--- Task EM ---')
-    # task_em(X_mouse) # TODO: uncomment to call the function
+    task_em(X_mouse)
 
 
 if __name__ == '__main__':

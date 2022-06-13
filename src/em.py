@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import multivariate_normal
 
+
 def calculate_responsibilities(X, mean, sigma, pi, N, K):
     """
     :param X: data for clustering, shape: (N, D), with N being the number of data points, D the dimension
@@ -11,18 +12,16 @@ def calculate_responsibilities(X, mean, sigma, pi, N, K):
     :param K: number of clusters
     :return: responsibilities - Equation (5) from the HW4 sheet
     """
-    responsibilities = np.zeros((N, K)) # gamma_nk from the HW sheet
+
+    responsibilities = np.zeros((N, K))  # gamma_nk from the HW sheet
 
     likelihood = np.zeros((N, K))
     for k in range(K):
-        likelihood[:, k] = multivariate_normal.pdf(X, mean=mean[k,:], cov=cov[k])
-    denom = np.sum((pi * likelihood), axis=1) # shape: (N,)
+        likelihood[:, k] = multivariate_normal.pdf(X, mean=mean[k, :], cov=sigma[k])
+    denom = np.sum((pi * likelihood), axis=1)  # shape: (N,)
     print(denom.shape)
 
-    # TODO: Now calculate responsibilities gamma_nk, that is, the whole expression
-    # Use the previously defined and calculated variable denom
-    for k in range(K):
-        responsibilities[:, k] = 0 # TODO: change
+    responsibilities = (pi * likelihood) / denom.reshape(N, 1)
         
     return responsibilities                                             
 
@@ -41,30 +40,25 @@ def update_parameters(X, mean, sigma, pi, responsibilities, N, K):
              pi_new - Equation (9) from the HW4 sheet, an array: shape (K, )
     """
 
-    mean_new = np.zeros_like(mean)
-    sigma_new  = np.zeros_like(sigma)
-    pi_new = np.zeros_like(pi)
-    
-    N_k = np.sum(responsibilities, axis=0)
-    
-    # Sigma is already calculated. Your task is to calculate mean_new and pi_new.
-    # If you want, you can make this piece of code more efficient (optional),
-    # and no points will be achieved only for rewriting it.
-    # The points for this task will be given for implementing the equations.
+    D = X.shape[1]
+    N_k = np.sum(responsibilities, axis=0)  # eq (6)
+
+    mean_new = 1 / N_k.reshape(K, 1) * np.sum(responsibilities.reshape(N, K, 1) * X.reshape(N, 1, D), axis=0)  # eq (7)
+
+    # eq (8)
+    sigma_new = np.zeros_like(sigma)
     for k in range(K):
         gamma_nk = responsibilities[:, k].T
 
-        # TODO: mean_new
-        
         tmp = np.zeros_like(sigma_new[k])
         for sample in range(N):
             diff = (X[sample, :] - mean_new[k, :]).reshape((-1, 1))
             tmp += gamma_nk[sample] * np.dot(diff, diff.T)
-                                          
+
         sigma_new[k] = tmp / N_k[k]
 
-        # TODO: pi_new
-    
+    pi_new = N_k / N  # eq (9)
+
     return mean_new, sigma_new, pi_new
 
 
@@ -77,6 +71,7 @@ def em(X, K, max_iter):
             soft_clusters - soft assignment of data points to clusters, shape: (N, K)
             log_likelihood - an array with values of cost over iteration
     """
+
     N = X.shape[0]
     D = X.shape[1]
 
@@ -100,10 +95,10 @@ def em(X, K, max_iter):
 
     for it in range(max_iter):
         # E-Step
-        # TODO: appropriate function call
+        responsibilities = calculate_responsibilities(X, mean, sigma, pi, N, K)
         
         # M-Step
-        # TODO: appropriate function call
+        mean, sigma, pi = update_parameters(X, mean, sigma, pi, responsibilities, N, K)
         
         # Evaluate
         soft_clusters = np.zeros((N, K))
@@ -115,6 +110,7 @@ def em(X, K, max_iter):
         if it > 1 and np.abs(log_likelihood[-1] - log_likelihood[-2]) < eps:
             print(f'Iteration {it}. Algorithm converged.')
             break
+
     print(f'Mean: {mean}')
     print(f'Sigma: {sigma}')
     print(f'Pi: {pi}')
