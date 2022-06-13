@@ -61,8 +61,7 @@ def plot_mickey_mouse(X, K, ind_samples_clusters, centroids):
         
     for i in range(K):
         ax.scatter(centroids[i, 0], centroids[i, 1], c='k', s=100)
-        # ax.scatter(centroids[i, 0], centroids[i, 1], c='k', s = (i + 1) * 40)
-            
+
     plt.show()
 
 
