@@ -81,7 +81,7 @@ def task_kmeans(X):
     :return:
     """
 
-    K = 5
+    K = 3
     max_iter = 50
     ind_samples_clusters, centroids, cost = kmeans(X, K, max_iter)
 
@@ -95,7 +95,7 @@ def task_em(X):
     :return:
     """
 
-    K = 5
+    K = 3
     max_iter = 100
     means, soft_clusters, log_likelihood = em(X, K, max_iter)
 
@@ -116,7 +116,7 @@ def main():
 
     # ----- Task K-Means
     print('--- Task K-Means ---')
-    # task_kmeans(X_mouse)
+    task_kmeans(X_mouse)
 
     # ----- Task EM
     print('--- Task EM ---')

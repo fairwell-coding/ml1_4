@@ -21,7 +21,7 @@ def cost_function(X, K, ind_samples_clusters, centroids):
     """
 
     X_ = X.reshape(X.shape[0], X.shape[1], 1)  # X reshaped for broadcasting in norm
-    centroids_ = centroids.reshape(1, centroids.shape[1], centroids.shape[0])  # centroids reshaped for broadcasting in norm
+    centroids_ = centroids.T.reshape(1, centroids.shape[1], centroids.shape[0])  # centroids reshaped for broadcasting in norm
     norms = np.linalg.norm(X_ - centroids_, axis=1)
     J = np.sum(ind_samples_clusters * norms**2)
 
